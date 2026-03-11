@@ -9,6 +9,7 @@ const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const clientRoutes = require('./routes/client.routes');
 const invoiceRoutes = require('./routes/invoice.routes');
+const paymentRoutes = require('./routes/payment.routes');
 
 const errorHandler = require('./middlewares/errorHandler');
 
@@ -31,6 +32,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/clients', clientRoutes);
 app.use('/api/invoices', invoiceRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Global error handler
 app.use(errorHandler);
