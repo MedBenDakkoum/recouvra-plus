@@ -28,9 +28,7 @@
   "jest": {
     "testEnvironment": "node",
     "testTimeout": 30000,
-    "setupFiles": [
-      "./tests/setup.js"
-    ],
+    "setupFilesAfterEnv": ["./tests/setup.js"],
     "testMatch": [
       "**/tests/**/*.test.js"
     ]
