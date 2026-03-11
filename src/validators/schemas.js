@@ -30,4 +30,11 @@ const invoiceSchema = Joi.object({
   description: Joi.string().optional(),
 });
 
-module.exports = { registerSchema, loginSchema, clientSchema, invoiceSchema };
+const paymentSchema = Joi.object({
+  invoice: Joi.string().required(),
+  amount: Joi.number().positive().required(),
+  paymentDate: Joi.date().optional(),
+  paymentMethod: Joi.string().valid("virement", "cheque", "especes", "carte").required(),
+});
+
+module.exports = { registerSchema, loginSchema, clientSchema, invoiceSchema, paymentSchema };
