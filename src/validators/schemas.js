@@ -19,4 +19,15 @@ const clientSchema = Joi.object({
   company: Joi.string().optional(),
 });
 
-module.exports = { registerSchema, loginSchema, clientSchema };
+const invoiceSchema = Joi.object({
+  invoiceNumber: Joi.string().required(),
+  client: Joi.string().required(),
+  amount: Joi.number().positive().required(),
+  currency: Joi.string().default("TND"),
+  issueDate: Joi.date().optional(),
+  dueDate: Joi.date().required(),
+  status: Joi.string().valid("pending", "overdue", "partial", "paid").default("pending"),
+  description: Joi.string().optional(),
+});
+
+module.exports = { registerSchema, loginSchema, clientSchema, invoiceSchema };
