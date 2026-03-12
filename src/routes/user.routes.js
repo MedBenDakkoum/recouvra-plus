@@ -18,9 +18,15 @@ router.use(authenticate);
  *   get:
  *     summary: Lister tous les utilisateurs
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Liste des utilisateurs
+ *       401:
+ *         description: Non authentifié
+ *       403:
+ *         description: Accès refusé (rôle insuffisant)
  */
 router.get('/', authorize('admin', 'manager'), userController.getAll);
 
@@ -30,6 +36,8 @@ router.get('/', authorize('admin', 'manager'), userController.getAll);
  *   get:
  *     summary: Obtenir un utilisateur
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -38,6 +46,10 @@ router.get('/', authorize('admin', 'manager'), userController.getAll);
  *     responses:
  *       200:
  *         description: Utilisateur trouvé
+ *       401:
+ *         description: Non authentifié
+ *       403:
+ *         description: Accès refusé (rôle insuffisant)
  *       404:
  *         description: Introuvable
  */
@@ -49,6 +61,8 @@ router.get('/:id', authorize('admin', 'manager'), userController.getOne);
  *   put:
  *     summary: Modifier un utilisateur
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -66,6 +80,14 @@ router.get('/:id', authorize('admin', 'manager'), userController.getOne);
  *     responses:
  *       200:
  *         description: Utilisateur mis à jour
+ *       400:
+ *         description: Règle métier non respectée
+ *       401:
+ *         description: Non authentifié
+ *       403:
+ *         description: Accès refusé (rôle insuffisant)
+ *       404:
+ *         description: Utilisateur introuvable
  */
 router.put('/:id', authorize('admin'), userController.update);
 
@@ -75,6 +97,8 @@ router.put('/:id', authorize('admin'), userController.update);
  *   delete:
  *     summary: Désactiver un utilisateur
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -83,6 +107,14 @@ router.put('/:id', authorize('admin'), userController.update);
  *     responses:
  *       200:
  *         description: Utilisateur désactivé
+ *       400:
+ *         description: Règle métier non respectée
+ *       401:
+ *         description: Non authentifié
+ *       403:
+ *         description: Accès refusé (rôle insuffisant)
+ *       404:
+ *         description: Utilisateur introuvable
  */
 router.delete('/:id', authorize('admin'), userController.remove);
 

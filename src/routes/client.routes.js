@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const clientController = require('../controllers/client.controller');
-const { authenticate } = require('../middlewares/auth.middleware');
+const { authenticate, authorize } = require('../middlewares/auth.middleware');
 const validate = require('../middlewares/validate');
 const { clientSchema } = require('../validators/schemas');
 
@@ -20,6 +20,8 @@ router.use(authenticate);
  *   get:
  *     summary: Lister les clients
  *     tags: [Clients]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: search
@@ -33,6 +35,8 @@ router.use(authenticate);
  *     responses:
  *       200:
  *         description: Liste des clients
+ *       401:
+ *         description: Non authentifié
  */
 router.get('/', clientController.getAll);
 
@@ -42,6 +46,8 @@ router.get('/', clientController.getAll);
  *   get:
  *     summary: Obtenir un client
  *     tags: [Clients]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -50,6 +56,8 @@ router.get('/', clientController.getAll);
  *     responses:
  *       200:
  *         description: Client trouvé
+ *       401:
+ *         description: Non authentifié
  *       404:
  *         description: Introuvable
  */
@@ -61,6 +69,8 @@ router.get('/:id', clientController.getOne);
  *   post:
  *     summary: Créer un client
  *     tags: [Clients]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -77,6 +87,10 @@ router.get('/:id', clientController.getOne);
  *     responses:
  *       201:
  *         description: Client créé
+ *       400:
+ *         description: Données invalides
+ *       401:
+ *         description: Non authentifié
  */
 router.post('/', validate(clientSchema), clientController.create);
 
@@ -132,8 +146,10 @@ router.put('/:id', validate(clientSchema), clientController.update);
  * @swagger
  * /clients/{id}:
  *   delete:
- *     summary: Supprimer un client
+ *     summary: Supprimer (désactiver) un client
  *     tags: [Clients]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -141,8 +157,15 @@ router.put('/:id', validate(clientSchema), clientController.update);
  *         schema: { type: string }
  *     responses:
  *       200:
- *         description: Client supprimé
+ *         description: Client supprimé (désactivé)
+ *       401:
+ *         description: Non authentifié
+ *       403:
+ *         description: Accès refusé (rôle insuffisant)
+ *       404:
+ *         description: Client introuvable
  */
-router.delete('/:id', clientController.remove);
+// Only manager or admin can deactivate a client
+router.delete('/:id', authorize('manager', 'admin'), clientController.remove);
 
 module.exports = router;
