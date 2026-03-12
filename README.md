@@ -4,7 +4,7 @@ Solution complète de gestion du recouvrement avec interface web moderne et API 
 
 ---
 
-## 🚀 Fonctionnalités
+##  Fonctionnalités
 
 - **Gestion des clients** — Création, modification, consultation
 - **Facturation** — Suivi des factures et échéances
@@ -15,7 +15,7 @@ Solution complète de gestion du recouvrement avec interface web moderne et API 
 
 ---
 
-## 🛠️ Technologies
+##  Technologies
 
 - **Backend** — Node.js 22, Express.js, MongoDB, JWT
 - **Frontend** — EJS, Tailwind CSS, JavaScript vanilla
@@ -24,14 +24,14 @@ Solution complète de gestion du recouvrement avec interface web moderne et API 
 
 ---
 
-## 📋 Prérequis
+##  Prérequis
 
 - Node.js 22+
 - MongoDB (local ou Atlas)
 
 ---
 
-## 🚀 Installation
+##  Installation
 
 ```bash
 # Cloner le projet
@@ -51,7 +51,7 @@ npm run dev
 
 ---
 
-## 🔐 Configuration
+## Configuration
 
 Variables d'environnement requises :
 
@@ -65,14 +65,14 @@ NODE_ENV=development
 
 ---
 
-## 📚 Documentation
+##  Documentation
 
 - **API Documentation** — `http://localhost:3000/api-docs`
 - **Interface Web** — `http://localhost:3000`
 
 ---
 
-## 👥 Rôles & Permissions
+##  Rôles & Permissions
 
 | Rôle | Permissions |
 |------|-------------|
@@ -82,7 +82,7 @@ NODE_ENV=development
 
 ---
 
-## 🧪 Tests
+##  Tests
 
 ```bash
 npm test
@@ -90,6 +90,6 @@ npm test
 
 ---
 
-## 📄 Licence
+## Licence
 
 © 2026 Recouvra+ — Tous droits réservés

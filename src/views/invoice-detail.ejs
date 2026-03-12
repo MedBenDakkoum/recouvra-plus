@@ -6,35 +6,34 @@
                         class="text-blue-500 hover:text-blue-700 font-bold"><i class="fas fa-arrow-left"></i> Retour</a>
                     <h1 class="text-3xl font-extrabold text-slate-800" id="invTitle">...</h1>
                 </div>
-                <div class="flex space-x-2"><button onclick="editModal.classList.toggle('hidden')"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow font-bold text-xs uppercase transition hover:bg-blue-700">Modifier</button>
+                <div class="flex items-center space-x-3"><button onclick="editModal.classList.toggle('hidden')"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow font-bold text-[10px] uppercase transition hover:bg-blue-700">Modifier</button>
+                    <button onclick="deleteInv()"
+                        class="px-4 py-2 bg-red-50 text-red-600 border border-red-100 rounded-lg font-bold text-[10px] uppercase transition hover:bg-red-600 hover:text-white">Supprimer</button>
                     <div id="invStatusBadge"></div>
                 </div>
             </div>
             <div id="editModal" class="hidden glass p-8 rounded-2xl shadow-xl border border-slate-200">
                 <form id="editForm" class="grid sm:grid-cols-2 gap-4">
                     <div class="sm:col-span-2"><label
-                            class="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Numéro de
-                            Facture</label><input name="invoiceNumber" id="editNum" required
+                            class="text-[10px] font-bold text-slate-400 uppercase pl-1">Numéro</label><input
+                            name="invoiceNumber" id="editNum" required
                             class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
-                    <div><label
-                            class="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Montant</label><input
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase pl-1">Montant</label><input
                             name="amount" type="number" id="editAmount" required
                             class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
-                    <div><label
-                            class="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Échéance</label><input
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase pl-1">Échéance</label><input
                             name="dueDate" type="date" id="editDate" required
                             class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                     <div class="sm:col-span-2"><label
-                            class="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Statut</label><select
+                            class="text-[10px] font-bold text-slate-400 uppercase pl-1">Statut</label><select
                             name="status" id="editStatus"
                             class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                             <option value="pending">En attente</option>
                             <option value="overdue">En retard</option>
-                            <option value="partial">Partiel</option>
                             <option value="paid">Payée</option>
                         </select></div>
                     <button
@@ -48,37 +47,27 @@
                     <div id="invInfo" class="grid grid-cols-2 gap-4"></div>
                 </div>
                 <div class="glass p-8 rounded-3xl border border-slate-100">
-                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 border-b pb-2">Paiement
+                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 border-b pb-2">Règlement
                     </h2>
-                    <form id="payForm" class="space-y-4">
-                        <input name="amount" type="number" placeholder="Montant" required
-                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                        <select name="paymentMethod"
-                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                            <option value="virement">Virement</option>
-                            <option value="cheque">Chèque</option>
-                            <option value="carte">Carte</option>
-                            <option value="especes">Espèces</option>
-                        </select>
-                        <button
-                            class="w-full py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition">Valider
-                            Paiement</button>
-                    </form>
-                </div>
-            </div>
-            <div class="space-y-6">
-                <h2 class="text-2xl font-bold text-slate-800">Historique</h2>
-                <div class="glass rounded-2xl overflow-hidden border border-slate-100 shadow-sm">
-                    <table class="w-full text-left text-sm bg-white">
-                        <thead class="bg-slate-50 border-b border-slate-100">
-                            <tr class="text-slate-500 font-medium uppercase">
-                                <th class="px-6 py-4">Date</th>
-                                <th class="px-6 py-4">Méthode</th>
-                                <th class="px-6 py-4 text-right">Montant</th>
-                            </tr>
-                        </thead>
-                        <tbody id="payTable" class="divide-y divide-slate-50 font-medium"></tbody>
-                    </table>
+                    <div id="paySection" class="space-y-4">
+                        <div class="p-6 bg-blue-50 rounded-2xl border border-blue-100 text-center">
+                            <div class="text-[10px] font-bold text-blue-600 uppercase mb-2">Montant à régler</div>
+                            <div class="text-3xl font-black text-blue-800" id="fullAmountDisplay">0.00 TND</div>
+                        </div>
+                        <form id="payForm" class="space-y-4">
+                            <input type="hidden" name="amount" id="payAmountInput">
+                            <select name="paymentMethod"
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                                <option value="virement">Virement</option>
+                                <option value="cheque">Chèque</option>
+                                <option value="carte">Carte</option>
+                                <option value="especes">Espèces</option>
+                            </select>
+                            <button
+                                class="w-full py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition">Confirmer
+                                le paiement intégral</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </main>
@@ -88,14 +77,15 @@
                 const render = async () => {
                     const resInv = await apiCall(`/invoices/${invoiceId}`); const i = resInv.data;
                     invTitle.innerText = `Facture #${i.invoiceNumber}`;
-                    invStatusBadge.innerHTML = `<span class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase ${i.status === 'paid' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}">${i.status}</span>`;
-                    invInfo.innerHTML = `<div><div class="text-[10px] text-slate-400 font-bold uppercase mb-1">Montant</div><div class="font-bold text-xl text-blue-600">${i.amount} TND</div></div><div><div class="text-[10px] text-slate-400 font-bold uppercase mb-1">Échéance</div><div class="font-bold">${new Date(i.dueDate).toLocaleDateString()}</div></div><div class="col-span-2"><div class="text-[10px] text-slate-400 font-bold uppercase mb-1">Client</div><div class="font-bold border-t pt-2 mt-2">${i.client?.name || 'Inconnu'}</div></div>`;
+                    invStatusBadge.innerHTML = `<span class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase ${i.status === 'paid' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}">${i.status === 'paid' ? 'Payée' : 'Non payée'}</span>`;
+                    invInfo.innerHTML = `<div><div class="text-[10px] text-slate-400 font-bold uppercase mb-1">Montant Total</div><div class="font-bold text-xl text-blue-600">${i.amount.toFixed(2)} TND</div></div><div><div class="text-[10px] text-slate-400 font-bold uppercase mb-1">Échéance</div><div class="font-bold">${new Date(i.dueDate).toLocaleDateString()}</div></div><div class="col-span-2 mt-4 pt-4 border-t"><div class="text-[10px] text-slate-400 font-bold uppercase mb-1">Client</div><div class="font-bold text-lg">${i.client?.name || 'Inconnu'}</div></div>`;
                     editNum.value = i.invoiceNumber; editAmount.value = i.amount; editDate.value = i.dueDate.split('T')[0]; editStatus.value = i.status;
-                    const resPay = await apiCall('/payments'); const pays = resPay.data || [];
-                    payTable.innerHTML = pays.filter(p => (p.invoice?._id || p.invoice) === invoiceId).map(p => `<tr class="hover:bg-blue-50 transition-colors"><td class="px-6 py-4 font-bold">${new Date(p.paymentDate).toLocaleDateString()}</td><td class="px-6 py-4 text-slate-600 uppercase text-[10px]">${p.paymentMethod}</td><td class="px-6 py-4 text-right font-extrabold text-emerald-600">+ ${p.amount} TND</td></tr>`).join('') || '<tr><td colspan="3" class="px-6 py-8 text-center text-slate-400">Aucun paiement</td></tr>';
+                    fullAmountDisplay.innerText = `${i.amount.toFixed(2)} TND`; payAmountInput.value = i.amount;
+                    if (i.status === 'paid') paySection.innerHTML = '<div class="py-12 text-center text-emerald-600 font-bold bg-emerald-50 rounded-3xl border-2 border-dashed border-emerald-200 uppercase text-xs tracking-widest"><i class="fas fa-check-circle text-2xl mb-2"></i><br/>Facture réglée en totalité</div>';
                 };
                 editForm.onsubmit = async (e) => { e.preventDefault(); await apiCall(`/invoices/${invoiceId}`, 'PUT', Object.fromEntries(new FormData(editForm))); editModal.classList.add('hidden'); render(); };
-                payForm.onsubmit = async (e) => { e.preventDefault(); await apiCall('/payments', 'POST', { ...Object.fromEntries(new FormData(payForm)), invoice: invoiceId }); payForm.reset(); render(); };
+                payForm.onsubmit = async (e) => { e.preventDefault(); await apiCall('/payments', 'POST', { ...Object.fromEntries(new FormData(payForm)), invoice: invoiceId }); render(); };
+                window.deleteInv = async () => { if (confirm('Supprimer cette facture ?')) { await apiCall(`/invoices/${invoiceId}`, 'DELETE'); window.location.href = '/invoices'; } };
                 render();
             </script>
             <%- include('partials/footer') %>
