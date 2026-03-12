@@ -1,0 +1,56 @@
+<%- include('partials/head') %>
+    <%- include('partials/nav') %>
+        <main class="max-w-7xl mx-auto px-4 py-12 space-y-12">
+            <div class="flex justify-between items-end">
+                <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Relances & Actions</h1><button
+                    onclick="actionModal.classList.toggle('hidden')"
+                    class="px-6 py-2 bg-indigo-600 text-white rounded-xl shadow-lg hover:bg-indigo-700 font-bold">+
+                    Nouvelle Action</button>
+            </div>
+            <div id="actionModal" class="hidden glass p-8 rounded-2xl shadow-xl border border-slate-200">
+                <form id="actionForm" class="grid sm:grid-cols-2 gap-4">
+                    <select name="client" id="clientSelect" required
+                        class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"></select>
+                    <select name="type" required class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="email">Email de relance</option>
+                        <option value="appel">Appel Sortant</option>
+                        <option value="courrier">Courrier RAR</option>
+                        <option value="visite">Visite Terrain</option>
+                    </select>
+                    <input name="result" placeholder="Résultat / Promise to pay"
+                        class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 sm:col-span-2">
+                    <textarea name="comment" placeholder="Commentaire libre"
+                        class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 sm:col-span-2 h-24"></textarea>
+                    <button
+                        class="px-6 py-2 bg-emerald-600 text-white rounded-lg shadow hover:bg-emerald-700 transition font-bold sm:col-span-2">Enregistrer
+                        Action</button>
+                </form>
+            </div>
+            <div class="glass rounded-3xl overflow-hidden border border-slate-100 shadow-xl shadow-slate-200/50">
+                <table class="w-full text-left text-sm bg-white">
+                    <thead class="bg-indigo-50 border-b border-indigo-100">
+                        <tr class="text-indigo-900 font-bold uppercase text-[10px] tracking-widest">
+                            <th class="px-8 py-6">Date</th>
+                            <th class="px-8 py-6">Client</th>
+                            <th class="px-8 py-6">Type d'action</th>
+                            <th class="px-8 py-6">Résultat</th>
+                        </tr>
+                    </thead>
+                    <tbody id="actionTable" class="divide-y divide-slate-50 font-medium text-slate-800"></tbody>
+                </table>
+            </div>
+        </main>
+        <%- include('partials/api-helper') %>
+            <script>
+                const render = async () => {
+                    const resCli = await apiCall('/clients');
+                    const clients = resCli.data || [];
+                    clientSelect.innerHTML = clients.map(c => `<option value="${c._id}">${c.name}</option>`).join('');
+                    const resAct = await apiCall('/actions');
+                    const actions = resAct.data || [];
+                    actionTable.innerHTML = actions.map(a => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-8 py-6 font-mono text-[10px] text-slate-400">${new Date(a.date).toLocaleString()}</td><td class="px-8 py-6 font-bold truncate max-w-[200px]">${a.client?.name || 'Inconnu'}</td><td class="px-8 py-6 uppercase text-[10px] tracking-widest text-indigo-600"><span class="px-2 py-1 bg-indigo-50 rounded">${a.type}</span></td><td class="px-8 py-6 truncate max-w-[300px]">${a.result || '-'} <br/><span class="text-[10px] font-normal text-slate-400">${a.comment || ''}</span></td></tr>`).join('') || '<tr><td colspan="4" class="px-8 py-12 text-center text-slate-400 font-bold uppercase text-[10px]">Aucune action enregistrée</td></tr>';
+                };
+                actionForm.onsubmit = async (e) => { e.preventDefault(); await apiCall('/actions', 'POST', Object.fromEntries(new FormData(actionForm))); actionForm.reset(); actionModal.classList.add('hidden'); render(); };
+                render();
+            </script>
+            <%- include('partials/footer') %>

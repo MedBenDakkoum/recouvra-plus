@@ -1,0 +1,23 @@
+<script>
+    const API_URL = '/api';
+    const getHeaders = () => {
+        const token = localStorage.getItem('token');
+        return { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) };
+    };
+    const apiCall = async (endpoint, method = 'GET', body = null) => {
+        try {
+            const resp = await fetch(`${API_URL}${endpoint}`, {
+                method, headers: getHeaders(), body: body ? JSON.stringify(body) : null
+            });
+            const data = await resp.json();
+            if (resp.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/login';
+                return;
+            }
+            if (!resp.ok) throw new Error(data.message || 'Erreur API');
+            return data;
+        } catch (err) { alert(err.message); throw err; }
+    };
+</script>

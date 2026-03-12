@@ -12,7 +12,6 @@ const clientSchema = new mongoose.Schema(
       country: { type: String },
     },
     company: { type: String, trim: true },
-    siret: { type: String, trim: true },
     notes: { type: String },
     isActive: { type: Boolean, default: true },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },

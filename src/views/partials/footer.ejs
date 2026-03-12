@@ -1,0 +1,14 @@
+<footer class="mt-20 py-8 border-t border-slate-200 text-center text-xs text-slate-500">
+    &copy; 2026 Recouvra+ — Solution de recouvrement par IA
+</footer>
+<script>
+    const token = localStorage.getItem('token');
+    const userJson = localStorage.getItem('user');
+    const user = userJson ? JSON.parse(userJson) : null;
+    if (user && document.getElementById('userName')) {
+        document.getElementById('userName').textContent = `${user.name} (${user.role})`;
+    }
+</script>
+</body>
+
+</html>

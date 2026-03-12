@@ -1,0 +1,54 @@
+<%- include('partials/head') %>
+    <%- include('partials/nav') %>
+        <main class="max-w-7xl mx-auto px-4 py-12 space-y-12">
+            <div class="flex flex-col space-y-2">
+                <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Utilisateurs & Agents</h1>
+                <p class="text-slate-500 text-sm">Gérez les accès et les rôles de votre équipe de recouvrement.</p>
+            </div>
+            <div id="editModal" class="hidden glass p-8 rounded-2xl shadow-xl border border-slate-200">
+                <form id="editForm" class="grid sm:grid-cols-2 gap-4">
+                    <input type="hidden" name="id" id="editUserId">
+                    <div class="sm:col-span-2"><label
+                            class="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Nom
+                            complet</label><input name="name" id="editName" required
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div><label
+                            class="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Rôle</label><select
+                            name="role" id="editRole"
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="agent">Agent</option>
+                            <option value="manager">Manager</option>
+                            <option value="admin">Admin</option>
+                        </select></div>
+                    <div class="flex items-end"><button
+                            class="w-full px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition font-bold">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+            <div class="glass rounded-3xl overflow-hidden border border-slate-100 shadow-xl shadow-slate-200/50">
+                <table class="w-full text-left text-sm bg-white">
+                    <thead class="bg-slate-50 border-b border-slate-100">
+                        <tr class="text-slate-500 font-bold uppercase text-[10px] tracking-widest">
+                            <th class="px-8 py-6">Utilisateur</th>
+                            <th class="px-8 py-6">Rôle / Statut</th>
+                            <th class="px-8 py-6 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTable" class="divide-y divide-slate-50 font-medium text-slate-800"></tbody>
+                </table>
+            </div>
+        </main>
+        <%- include('partials/api-helper') %>
+            <script>
+                let usersData = [];
+                const render = async () => {
+                    const res = await apiCall('/users'); usersData = res.data || [];
+                    userTable.innerHTML = usersData.map(u => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-8 py-6 font-bold truncate max-w-[200px]">${u.name}<br/><span class="text-slate-400 font-normal text-xs font-mono">${u.email}</span></td><td class="px-8 py-6"><span class="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-100 font-bold uppercase tracking-widest mr-2">${u.role}</span> <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${u.isActive ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}">${u.isActive ? 'Actif' : 'Inactif'}</span></td><td class="px-8 py-6 text-right space-x-4"><button onclick="openEdit('${u._id}')" class="text-blue-500 hover:text-blue-700 font-bold text-xs uppercase tracking-widest">Modifier</button><button onclick="toggleUser('${u._id}', ${u.isActive})" class="text-xs font-bold ${u.isActive ? 'text-red-500 hover:text-red-700' : 'text-emerald-500 hover:text-emerald-700'} transition uppercase tracking-widest">${u.isActive ? 'Désactiver' : 'Activer'}</button></td></tr>`).join('');
+                };
+                window.openEdit = (id) => { const u = usersData.find(u => u._id === id); if (!u) return; editUserId.value = u._id; editName.value = u.name; editRole.value = u.role; editModal.classList.toggle('hidden'); };
+                editForm.onsubmit = async (e) => { e.preventDefault(); await apiCall(`/users/${editUserId.value}`, 'PUT', Object.fromEntries(new FormData(editForm))); editModal.classList.add('hidden'); render(); };
+                window.toggleUser = async (id, current) => { if (confirm('Sûr ?')) { await apiCall(`/users/${id}`, 'PUT', { isActive: !current }); render(); } };
+                render();
+            </script>
+            <%- include('partials/footer') %>

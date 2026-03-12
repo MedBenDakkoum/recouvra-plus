@@ -1,0 +1,31 @@
+<%- include('partials/head') %>
+    <%- include('partials/nav') %>
+        <main class="max-w-7xl mx-auto px-4 py-12 space-y-12">
+            <div class="flex flex-col space-y-2">
+                <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Journal des Paiements</h1>
+                <p class="text-slate-500 font-medium">Récapitulatif de tous les encaissements en temps réel.</p>
+            </div>
+            <div class="glass rounded-3xl overflow-hidden border border-slate-100 shadow-xl shadow-slate-200/50">
+                <table class="w-full text-left text-sm bg-white">
+                    <thead class="bg-emerald-50 border-b border-emerald-100">
+                        <tr class="text-emerald-900 font-bold uppercase text-[10px] tracking-widest">
+                            <th class="px-8 py-6">Date</th>
+                            <th class="px-8 py-6">Facture</th>
+                            <th class="px-8 py-6">Méthode</th>
+                            <th class="px-8 py-6 text-right">Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody id="payTable" class="divide-y divide-slate-50 font-medium text-slate-800"></tbody>
+                </table>
+            </div>
+        </main>
+        <%- include('partials/api-helper') %>
+            <script>
+                const render = async () => {
+                    const res = await apiCall('/payments');
+                    const pays = res.data || [];
+                    payTable.innerHTML = pays.map(p => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-8 py-6 font-mono text-[10px] text-slate-400">${new Date(p.paymentDate).toLocaleString()}</td><td class="px-8 py-6 font-bold truncate max-w-[200px]"><a href="/invoices/${p.invoice?._id || p.invoice}" class="text-blue-500 hover:underline">#${p.invoice?.invoiceNumber || '-'}</a></td><td class="px-8 py-6 uppercase text-[10px] tracking-widest text-emerald-600"><span class="px-2 py-1 bg-emerald-50 rounded">${p.paymentMethod}</span></td><td class="px-8 py-6 text-right font-extrabold text-emerald-600">+ ${p.amount} TND</td></tr>`).join('') || '<tr><td colspan="4" class="px-8 py-12 text-center text-slate-400 font-bold uppercase text-[10px]">Aucun encaissement trouvé</td></tr>';
+                };
+                render();
+            </script>
+            <%- include('partials/footer') %>
