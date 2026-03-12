@@ -12,29 +12,9 @@ exports.register = async (req, res, next) => {
   try {
     const { name, email, password, role } = req.body;
 
-    // Enforce single global admin
+    // Ensure we never create more than one global admin user
     if (role === 'admin') {
       const existingAdmin = await User.findOne({ role: 'admin' });
-
-      // #region agent log
-      fetch('http://127.0.0.1:7878/ingest/c035b6c4-1f5d-4ddc-be29-ef504c2a160f', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Debug-Session-Id': 'e4692c',
-        },
-        body: JSON.stringify({
-          sessionId: 'e4692c',
-          runId: 'pre-fix',
-          hypothesisId: 'H1',
-          location: 'auth.controller.js:register',
-          message: 'Admin registration attempt',
-          data: { hasExistingAdmin: Boolean(existingAdmin) },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
-
       if (existingAdmin) {
         return res
           .status(400)

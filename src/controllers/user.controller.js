@@ -26,46 +26,49 @@ exports.update = async (req, res, next) => {
   try {
     const { name, role, isActive } = req.body;
 
-    // Enforce single global admin when changing role
-    if (role === 'admin') {
-      const existingAdmin = await User.findOne({
-        role: 'admin',
-        _id: { $ne: req.params.id },
-      });
+    const current = await User.findById(req.params.id);
+    if (!current) {
+      return res.status(404).json({ success: false, message: 'Utilisateur introuvable' });
+    }
 
-      // #region agent log
-      fetch('http://127.0.0.1:7878/ingest/c035b6c4-1f5d-4ddc-be29-ef504c2a160f', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Debug-Session-Id': 'e4692c',
-        },
-        body: JSON.stringify({
-          sessionId: 'e4692c',
-          runId: 'pre-fix',
-          hypothesisId: 'H2',
-          location: 'user.controller.js:update',
-          message: 'Admin role update attempt',
-          data: { hasExistingOtherAdmin: Boolean(existingAdmin) },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
+    // Prevent having more than one active admin or losing the last one
+    const isBecomingAdmin = role === 'admin' && current.role !== 'admin';
+    const isLeavingAdmin = current.role === 'admin' && role && role !== 'admin';
+    const isDeactivatingAdmin =
+      current.role === 'admin' &&
+      typeof isActive === 'boolean' &&
+      current.isActive &&
+      isActive === false;
 
-      if (existingAdmin) {
+    if (isBecomingAdmin) {
+      const otherAdmin = await User.findOne({ role: 'admin', _id: { $ne: current._id } });
+      if (otherAdmin) {
         return res
           .status(400)
           .json({ success: false, message: 'Un administrateur global existe déjà' });
       }
     }
 
-    const user = await User.findByIdAndUpdate(
+    if (isLeavingAdmin || isDeactivatingAdmin) {
+      const otherActiveAdmin = await User.findOne({
+        role: 'admin',
+        isActive: true,
+        _id: { $ne: current._id },
+      });
+      if (!otherActiveAdmin) {
+        return res.status(400).json({
+          success: false,
+          message: 'Impossible de modifier ou désactiver le dernier administrateur actif',
+        });
+      }
+    }
+
+    const updated = await User.findByIdAndUpdate(
       req.params.id,
       { name, role, isActive },
       { new: true, runValidators: true }
     );
-    if (!user) return res.status(404).json({ success: false, message: 'Utilisateur introuvable' });
-    res.json({ success: true, data: user });
+    res.json({ success: true, data: updated });
   } catch (err) {
     next(err);
   }
@@ -74,8 +77,29 @@ exports.update = async (req, res, next) => {
 // DELETE /users/:id
 exports.remove = async (req, res, next) => {
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
-    if (!user) return res.status(404).json({ success: false, message: 'Utilisateur introuvable' });
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Utilisateur introuvable' });
+    }
+
+    // Do not allow deactivating the last active admin user
+    if (user.role === 'admin' && user.isActive) {
+      const otherActiveAdmin = await User.findOne({
+        role: 'admin',
+        isActive: true,
+        _id: { $ne: user._id },
+      });
+      if (!otherActiveAdmin) {
+        return res.status(400).json({
+          success: false,
+          message: 'Impossible de désactiver le dernier administrateur actif',
+        });
+      }
+    }
+
+    user.isActive = false;
+    await user.save();
+
     res.json({ success: true, message: 'Utilisateur désactivé' });
   } catch (err) {
     next(err);
