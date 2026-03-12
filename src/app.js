@@ -10,6 +10,7 @@ const userRoutes = require('./routes/user.routes');
 const clientRoutes = require('./routes/client.routes');
 const invoiceRoutes = require('./routes/invoice.routes');
 const paymentRoutes = require('./routes/payment.routes');
+const actionRoutes = require('./routes/action.routes');
 
 const errorHandler = require('./middlewares/errorHandler');
 
@@ -33,6 +34,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/clients', clientRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/actions', actionRoutes);
 
 // Global error handler
 app.use(errorHandler);
@@ -47,7 +49,7 @@ if (process.env.NODE_ENV !== 'test') {
     .then(() => {
       console.log('MongoDB connecté');
       app.listen(PORT, () => console.log(`Serveur démarré sur le port ${PORT}`));
-      console.log('Documentation Swagger: http://localhost:${PORT}/api-docs');
+      console.log(`Documentation Swagger: http://localhost:${PORT}/api-docs`);
     })
     .catch((err) => {
       console.error('Erreur MongoDB:', err.message);

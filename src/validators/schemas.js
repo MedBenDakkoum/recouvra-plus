@@ -37,4 +37,20 @@ const paymentSchema = Joi.object({
   paymentMethod: Joi.string().valid("virement", "cheque", "especes", "carte").required(),
 });
 
-module.exports = { registerSchema, loginSchema, clientSchema, invoiceSchema, paymentSchema };
+const actionSchema = Joi.object({
+  client: Joi.string().required(),
+  invoice: Joi.string().optional(),
+  type: Joi.string().valid("appel", "email", "courrier", "visite").required(),
+  date: Joi.date().optional(),
+  result: Joi.string().optional(),
+  comment: Joi.string().optional(),
+});
+
+module.exports = {
+  registerSchema,
+  loginSchema,
+  clientSchema,
+  invoiceSchema,
+  paymentSchema,
+  actionSchema,
+};
