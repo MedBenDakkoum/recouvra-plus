@@ -16,6 +16,7 @@ exports.getActions = async (req, res, next) => {
   try {
     const { client, invoice } = req.query;
     const filter = {};
+
     if (client) filter.client = client;
     if (invoice) filter.invoice = invoice;
 
@@ -38,7 +39,9 @@ exports.getActionById = async (req, res, next) => {
       .populate('createdBy', 'name email');
 
     if (!action) {
-      return res.status(404).json({ success: false, message: 'Action non trouvée' });
+      return res
+        .status(404)
+        .json({ success: false, message: 'Action non trouvée', errors: [] });
     }
 
     res.status(200).json({ success: true, data: action });

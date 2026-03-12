@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { authenticate } = require('../middlewares/auth.middleware');
 const validate = require('../middlewares/validate');
-const { paymentSchema } = require('../validators/schemas');
+const { paymentSchema, paymentListQuerySchema } = require('../validators/schemas');
 const {
   createPayment,
   getPayments,
@@ -67,7 +67,7 @@ const {
  */
 router.route('/')
   .post(authenticate, validate(paymentSchema), createPayment)
-  .get(authenticate, getPayments);
+  .get(authenticate, validate.validateQuery(paymentListQuerySchema), getPayments);
 
 /**
  * @swagger

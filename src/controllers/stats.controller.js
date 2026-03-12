@@ -108,12 +108,16 @@ exports.getClientStats = async (req, res, next) => {
   try {
     const clientId = toObjectId(req.params.id);
     if (!clientId) {
-      return res.status(400).json({ success: false, message: 'ID client invalide' });
+      return res
+        .status(400)
+        .json({ success: false, message: 'ID client invalide', errors: [] });
     }
 
     const client = await Client.findById(clientId);
     if (!client || !client.isActive) {
-      return res.status(404).json({ success: false, message: 'Client introuvable' });
+      return res
+        .status(404)
+        .json({ success: false, message: 'Client introuvable', errors: [] });
     }
 
     // Factures du client

@@ -4,8 +4,11 @@ const Invoice = require('../models/invoice.model');
 exports.createPayment = async (req, res, next) => {
   try {
     const invoice = await Invoice.findById(req.body.invoice);
+
     if (!invoice) {
-      return res.status(404).json({ success: false, message: 'Facture non trouvée' });
+      return res
+        .status(404)
+        .json({ success: false, message: 'Facture non trouvée', errors: [] });
     }
 
     const payment = await Payment.create({
@@ -23,6 +26,7 @@ exports.createPayment = async (req, res, next) => {
     } else {
       invoice.status = 'partial';
     }
+
     await invoice.save();
 
     res.status(201).json({ success: true, data: payment });
@@ -35,6 +39,7 @@ exports.getPayments = async (req, res, next) => {
   try {
     const { invoice, client } = req.query;
     const filter = {};
+
     if (invoice) filter.invoice = invoice;
 
     const payments = await Payment.find(filter)
@@ -54,7 +59,9 @@ exports.getPaymentById = async (req, res, next) => {
       .populate('createdBy', 'name email');
 
     if (!payment) {
-      return res.status(404).json({ success: false, message: 'Paiement non trouvé' });
+      return res
+        .status(404)
+        .json({ success: false, message: 'Paiement non trouvé', errors: [] });
     }
 
     res.status(200).json({ success: true, data: payment });

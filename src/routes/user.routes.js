@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user.controller');
 const { authenticate, authorize } = require('../middlewares/auth.middleware');
+const validate = require('../middlewares/validate');
+const { userUpdateSchema } = require('../validators/schemas');
 
 /**
  * @swagger
@@ -89,7 +91,7 @@ router.get('/:id', authorize('admin', 'manager'), userController.getOne);
  *       404:
  *         description: Utilisateur introuvable
  */
-router.put('/:id', authorize('admin'), userController.update);
+router.put('/:id', authorize('admin'), validate(userUpdateSchema), userController.update);
 
 /**
  * @swagger

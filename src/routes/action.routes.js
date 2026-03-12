@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { authenticate } = require('../middlewares/auth.middleware');
 const validate = require('../middlewares/validate');
-const { actionSchema } = require('../validators/schemas');
+const { actionSchema, actionListQuerySchema } = require('../validators/schemas');
 const {
   createAction,
   getActions,
@@ -78,7 +78,7 @@ const {
  */
 router.route('/')
   .post(authenticate, validate(actionSchema), createAction)
-  .get(authenticate, getActions);
+  .get(authenticate, validate.validateQuery(actionListQuerySchema), getActions);
 
 /**
  * @swagger
