@@ -3,30 +3,34 @@ const Invoice = require('../models/invoice.model');
 
 exports.createPayment = async (req, res, next) => {
   try {
-    const invoice = await Invoice.findById(req.body.invoice);
+    const { invoice: invoiceId, amount, paymentMethod } = req.body;
+    const invoice = await Invoice.findById(invoiceId);
 
     if (!invoice) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Facture non trouvée', errors: [] });
+      return res.status(404).json({ success: false, message: 'Facture non trouvée' });
+    }
+
+    if (invoice.status === 'paid') {
+      return res.status(400).json({ success: false, message: 'Cette facture est déjà payée' });
+    }
+
+    // Nouvelle logique : Le montant doit être exactement égal au montant de la facture
+    if (Number(amount) !== invoice.amount) {
+      return res.status(400).json({
+        success: false,
+        message: `Le paiement doit être égal au montant total de la facture (${invoice.amount} TND)`
+      });
     }
 
     const payment = await Payment.create({
-      ...req.body,
+      invoice: invoiceId,
+      amount: invoice.amount,
+      paymentMethod,
       createdBy: req.user._id,
     });
 
-    // Calculer le total des paiements pour cette facture
-    const payments = await Payment.find({ invoice: invoice._id });
-    const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
-
-    // Mettre à jour le statut de la facture
-    if (totalPaid >= invoice.amount) {
-      invoice.status = 'paid';
-    } else {
-      invoice.status = 'partial';
-    }
-
+    // Mise à jour directe du statut en 'paid'
+    invoice.status = 'paid';
     await invoice.save();
 
     res.status(201).json({ success: true, data: payment });
@@ -37,9 +41,8 @@ exports.createPayment = async (req, res, next) => {
 
 exports.getPayments = async (req, res, next) => {
   try {
-    const { invoice, client } = req.query;
+    const { invoice } = req.query;
     const filter = {};
-
     if (invoice) filter.invoice = invoice;
 
     const payments = await Payment.find(filter)
@@ -59,9 +62,7 @@ exports.getPaymentById = async (req, res, next) => {
       .populate('createdBy', 'name email');
 
     if (!payment) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Paiement non trouvé', errors: [] });
+      return res.status(404).json({ success: false, message: 'Paiement non trouvé' });
     }
 
     res.status(200).json({ success: true, data: payment });
