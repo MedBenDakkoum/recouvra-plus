@@ -35,7 +35,9 @@ exports.getInvoiceById = async (req, res, next) => {
       .populate('client')
       .populate('createdBy', 'name email');
     if (!invoice || !invoice.isActive) {
-      return res.status(404).json({ success: false, message: 'Facture non trouvée' });
+      return res
+        .status(404)
+        .json({ success: false, message: 'Facture non trouvée', errors: [] });
     }
     res.status(200).json({ success: true, data: invoice });
   } catch (err) {
@@ -50,8 +52,10 @@ exports.updateInvoice = async (req, res, next) => {
       req.body,
       { new: true, runValidators: true }
     );
-    if (!invoice) {
-      return res.status(404).json({ success: false, message: 'Facture non trouvée' });
+    if (!invoice || !invoice.isActive) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Facture non trouvée', errors: [] });
     }
     res.status(200).json({ success: true, data: invoice });
   } catch (err) {
@@ -67,9 +71,11 @@ exports.deleteInvoice = async (req, res, next) => {
       { new: true }
     );
     if (!invoice) {
-      return res.status(404).json({ success: false, message: 'Facture non trouvée' });
+      return res
+        .status(404)
+        .json({ success: false, message: 'Facture non trouvée', errors: [] });
     }
-    res.status(200).json({ success: true, message: 'Facture désactivée' });
+    res.status(200).json({ success: true, message: 'Facture désactivée', errors: [] });
   } catch (err) {
     next(err);
   }

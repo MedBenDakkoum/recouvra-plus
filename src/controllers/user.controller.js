@@ -28,7 +28,9 @@ exports.update = async (req, res, next) => {
 
     const current = await User.findById(req.params.id);
     if (!current) {
-      return res.status(404).json({ success: false, message: 'Utilisateur introuvable' });
+      return res
+        .status(404)
+        .json({ success: false, message: 'Utilisateur introuvable', errors: [] });
     }
 
     // Prevent having more than one active admin or losing the last one
@@ -45,7 +47,11 @@ exports.update = async (req, res, next) => {
       if (otherAdmin) {
         return res
           .status(400)
-          .json({ success: false, message: 'Un administrateur global existe déjà' });
+          .json({
+            success: false,
+            message: 'Un administrateur global existe déjà',
+            errors: [],
+          });
       }
     }
 
@@ -59,6 +65,7 @@ exports.update = async (req, res, next) => {
         return res.status(400).json({
           success: false,
           message: 'Impossible de modifier ou désactiver le dernier administrateur actif',
+          errors: [],
         });
       }
     }
@@ -79,7 +86,9 @@ exports.remove = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
-      return res.status(404).json({ success: false, message: 'Utilisateur introuvable' });
+      return res
+        .status(404)
+        .json({ success: false, message: 'Utilisateur introuvable', errors: [] });
     }
 
     // Do not allow deactivating the last active admin user
@@ -93,6 +102,7 @@ exports.remove = async (req, res, next) => {
         return res.status(400).json({
           success: false,
           message: 'Impossible de désactiver le dernier administrateur actif',
+          errors: [],
         });
       }
     }

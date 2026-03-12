@@ -2,7 +2,11 @@ const express = require('express');
 const router = express.Router();
 const { authenticate, authorize } = require('../middlewares/auth.middleware');
 const validate = require('../middlewares/validate');
-const { invoiceSchema } = require('../validators/schemas');
+const {
+  invoiceSchema,
+  invoiceUpdateSchema,
+  invoiceListQuerySchema,
+} = require('../validators/schemas');
 const {
   createInvoice,
   getInvoices,
@@ -83,7 +87,7 @@ const {
  */
 router.route('/')
   .post(authenticate, validate(invoiceSchema), createInvoice)
-  .get(authenticate, getInvoices);
+  .get(authenticate, validate.validateQuery(invoiceListQuerySchema), getInvoices);
 
 /**
  * @swagger
@@ -179,7 +183,7 @@ router.route('/')
  */
 router.route('/:id')
   .get(authenticate, getInvoiceById)
-  .put(authenticate, validate(invoiceSchema), updateInvoice)
+  .put(authenticate, validate(invoiceUpdateSchema), updateInvoice)
   .delete(authenticate, authorize('manager', 'admin'), deleteInvoice);
 
 module.exports = router;

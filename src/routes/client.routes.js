@@ -3,7 +3,7 @@ const router = express.Router();
 const clientController = require('../controllers/client.controller');
 const { authenticate, authorize } = require('../middlewares/auth.middleware');
 const validate = require('../middlewares/validate');
-const { clientSchema } = require('../validators/schemas');
+const { clientSchema, clientUpdateSchema, clientListQuerySchema } = require('../validators/schemas');
 
 /**
  * @swagger
@@ -38,7 +38,7 @@ router.use(authenticate);
  *       401:
  *         description: Non authentifié
  */
-router.get('/', clientController.getAll);
+router.get('/', validate.validateQuery(clientListQuerySchema), clientController.getAll);
 
 /**
  * @swagger
@@ -140,7 +140,7 @@ router.post('/', validate(clientSchema), clientController.create);
  *       404:
  *         description: Client introuvable
  */
-router.put('/:id', validate(clientSchema), clientController.update);
+router.put('/:id', validate(clientUpdateSchema), clientController.update);
 
 /**
  * @swagger

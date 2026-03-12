@@ -27,7 +27,11 @@ exports.getAll = async (req, res, next) => {
 exports.getOne = async (req, res, next) => {
   try {
     const client = await Client.findById(req.params.id).populate('createdBy', 'name email');
-    if (!client) return res.status(404).json({ success: false, message: 'Client introuvable' });
+    if (!client || !client.isActive) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Client introuvable', errors: [] });
+    }
     res.json({ success: true, data: client });
   } catch (err) {
     next(err);
@@ -48,7 +52,11 @@ exports.create = async (req, res, next) => {
 exports.update = async (req, res, next) => {
   try {
     const client = await Client.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-    if (!client) return res.status(404).json({ success: false, message: 'Client introuvable' });
+    if (!client || !client.isActive) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Client introuvable', errors: [] });
+    }
     res.json({ success: true, data: client });
   } catch (err) {
     next(err);
@@ -59,8 +67,12 @@ exports.update = async (req, res, next) => {
 exports.remove = async (req, res, next) => {
   try {
     const client = await Client.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
-    if (!client) return res.status(404).json({ success: false, message: 'Client introuvable' });
-    res.json({ success: true, message: 'Client supprimé' });
+    if (!client) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Client introuvable', errors: [] });
+    }
+    res.json({ success: true, message: 'Client supprimé', errors: [] });
   } catch (err) {
     next(err);
   }
