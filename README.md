@@ -1,63 +1,95 @@
-# Recouvra+ — API de gestion du recouvrement
+# Recouvra+ — Platforme de Recouvrement
 
-API REST backend développée avec **Node.js 22**, **Express.js**, **MongoDB** et **JWT**.
+Solution complète de gestion du recouvrement avec interface web moderne et API REST.
 
+---
 
-### Prérequis
+## 🚀 Fonctionnalités
+
+- **Gestion des clients** — Création, modification, consultation
+- **Facturation** — Suivi des factures et échéances
+- **Paiements** — Enregistrement et historique des paiements
+- **Actions de relance** — Email, téléphone, courrier, visites
+- **Tableau de bord** — Statistiques et indicateurs de performance
+- **Gestion des utilisateurs** — Rôles et permissions
+
+---
+
+## 🛠️ Technologies
+
+- **Backend** — Node.js 22, Express.js, MongoDB, JWT
+- **Frontend** — EJS, Tailwind CSS, JavaScript vanilla
+- **Authentification** — JWT avec rôles (agent, manager, admin)
+- **Documentation** — Swagger UI intégrée
+
+---
+
+## 📋 Prérequis
+
 - Node.js 22+
-- MongoDB (Atlas)
+- MongoDB (local ou Atlas)
 
-### Installation
+---
+
+## 🚀 Installation
 
 ```bash
+# Cloner le projet
+git clone <repository-url>
+cd Recouvra_plus
+
+# Installer les dépendances
 npm install
+
+# Configurer les variables d'environnement
+cp .env.example .env
+# Éditer .env avec vos configurations
+
+# Démarrer le serveur
 npm run dev
 ```
 
-### Documentation Swagger
-Disponible sur : `http://localhost:3000/api-docs`
+---
 
-### Tests
+## 🔐 Configuration
+
+Variables d'environnement requises :
+
+```env
+PORT=3000
+MONGODB_URI=votre_uri_mongodb
+JWT_SECRET=votre_clé_secrète
+JWT_EXPIRES_IN=7d
+NODE_ENV=development
+```
+
+---
+
+## 📚 Documentation
+
+- **API Documentation** — `http://localhost:3000/api-docs`
+- **Interface Web** — `http://localhost:3000`
+
+---
+
+## 👥 Rôles & Permissions
+
+| Rôle | Permissions |
+|------|-------------|
+| **Agent** | Gestion clients, factures, actions |
+| **Manager** | + Statistiques, suppression |
+| **Admin** | + Gestion utilisateurs |
+
+---
+
+## 🧪 Tests
+
 ```bash
 npm test
 ```
 
-
-
-## Authentification
-
-Toutes les routes (sauf `/api/auth/register` et `/api/auth/login`) nécessitent un header :
-
-```
-Authorization: Bearer <token>
-```
-
-### Rôles
-| Rôle    | Accès                                     |
-|---------|-------------------------------------------|
-| agent   | Lecture/écriture clients, factures, actions |
-| manager | + statistiques, suppression               |
-| admin   | Accès complet + gestion utilisateurs      |
-
-
-
-## Variables d'environnement
-
-| Variable        | Description                    | Défaut                    |
-|-----------------|--------------------------------|---------------------------|
-| PORT            | Port HTTP                      | 3000                      |
-| MONGODB_URI     | URI MongoDB                    | mongodb://localhost:27017/ |
-| JWT_SECRET      | Clé secrète JWT                | (requis)                  |
-| JWT_EXPIRES_IN  | Durée de validité du token     | 7d                        |
-| NODE_ENV        | Environnement                  | development               |
-
 ---
 
-## Technologies
+## 📄 Licence
 
-- **Node.js 22** + **Express.js** — Framework API
-- **MongoDB** + **Mongoose** — Base de données
-- **JWT** (jsonwebtoken) — Authentification
-- **Joi** — Validation des données
-- **Swagger** (swagger-jsdoc + swagger-ui-express) — Documentation
-- **Jest** + **Supertest** + **mongodb-memory-server** — Tests unitaires
+© 2026 Recouvra+ — Tous droits réservés
