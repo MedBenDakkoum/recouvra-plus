@@ -95,29 +95,30 @@ router.put('/:id', authorize('admin'), validate(userUpdateSchema), userControlle
 
 /**
  * @swagger
- * /users/{id}:
- *   delete:
+ * /users/{id}/deactivate:
+ *   patch:
  *     summary: Désactiver un utilisateur
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema: { type: string }
  *     responses:
  *       200:
  *         description: Utilisateur désactivé
- *       400:
- *         description: Règle métier non respectée
- *       401:
- *         description: Non authentifié
- *       403:
- *         description: Accès refusé (rôle insuffisant)
- *       404:
- *         description: Utilisateur introuvable
  */
-router.delete('/:id', authorize('admin'), userController.remove);
+router.patch('/:id/deactivate', authorize('admin'), userController.remove);
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   delete:
+ *     summary: Supprimer définitivement un utilisateur
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Utilisateur supprimé
+ */
+router.delete('/:id', authorize('admin'), userController.permanentDelete);
 
 module.exports = router;

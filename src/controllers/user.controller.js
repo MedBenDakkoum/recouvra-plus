@@ -115,3 +115,33 @@ exports.remove = async (req, res, next) => {
     next(err);
   }
 };
+
+// DELETE /users/:id/permanent (permanent delete)
+exports.permanentDelete = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Utilisateur introuvable' });
+    }
+
+    // Do not allow deleting the last active admin user
+    if (user.role === 'admin' && user.isActive) {
+      const otherActiveAdmin = await User.findOne({
+        role: 'admin',
+        isActive: true,
+        _id: { $ne: user._id },
+      });
+      if (!otherActiveAdmin) {
+        return res.status(400).json({
+          success: false,
+          message: 'Impossible de supprimer le dernier administrateur actif',
+        });
+      }
+    }
+
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Utilisateur supprimé définitivement' });
+  } catch (err) {
+    next(err);
+  }
+};

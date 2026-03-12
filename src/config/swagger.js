@@ -6,7 +6,7 @@ const options = {
     info: {
       title: 'Recouvra+ API',
       version: '1.0.0',
-      description: 'API REST de gestion du recouvrement — clients, factures, paiements, actions',
+      description: 'API REST de gestion du recouvrement — Mis à jour à 00:45',
     },
     servers: [{ url: '/api' }],
     components: {
