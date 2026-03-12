@@ -18,15 +18,42 @@ const {
 
 /**
  * @swagger
- * /api/payments:
+ * /payments:
  *   post:
  *     summary: Enregistrer un paiement
  *     tags: [Payments]
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [invoice, amount, paymentMethod]
+ *             properties:
+ *               invoice:
+ *                 type: string
+ *                 description: ID de la facture payée
+ *               amount:
+ *                 type: number
+ *                 format: float
+ *                 description: Montant du paiement
+ *               paymentDate:
+ *                 type: string
+ *                 format: date
+ *                 description: Date du paiement
+ *               paymentMethod:
+ *                 type: string
+ *                 description: Méthode de paiement
+ *                 enum: [virement, cheque, especes, carte]
  *     responses:
  *       201:
  *         description: Paiement enregistré
+ *       400:
+ *         description: Données invalides
+ *       401:
+ *         description: Non authentifié
  *   get:
  *     summary: Lister les paiements
  *     tags: [Payments]
@@ -35,6 +62,8 @@ const {
  *     responses:
  *       200:
  *         description: Liste des paiements
+ *       401:
+ *         description: Non authentifié
  */
 router.route('/')
   .post(authenticate, validate(paymentSchema), createPayment)
@@ -42,12 +71,26 @@ router.route('/')
 
 /**
  * @swagger
- * /api/payments/{id}:
+ * /payments/{id}:
  *   get:
  *     summary: Récupérer un paiement
  *     tags: [Payments]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID du paiement
+ *     responses:
+ *       200:
+ *         description: Paiement trouvé
+ *       401:
+ *         description: Non authentifié
+ *       404:
+ *         description: Paiement introuvable
  */
 router.route('/:id')
   .get(authenticate, getPaymentById);
