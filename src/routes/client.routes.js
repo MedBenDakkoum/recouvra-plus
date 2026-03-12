@@ -99,6 +99,8 @@ router.post('/', validate(clientSchema), clientController.create);
  *   put:
  *     summary: Modifier un client
  *     tags: [Clients]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -140,9 +142,10 @@ router.put('/:id', validate(clientUpdateSchema), clientController.update);
 
 /**
  * @swagger
- * /clients/{id}:
- *   delete:
- *     summary: Supprimer (désactiver) un client
+ * /clients/{id}/deactivate:
+ *   patch:
+ *     summary: Désactiver un client 
+ *     description: Passe le champ `isActive` à `false` sans supprimer l'enregistrement en base.
  *     tags: [Clients]
  *     security:
  *       - bearerAuth: []
@@ -150,10 +153,31 @@ router.put('/:id', validate(clientUpdateSchema), clientController.update);
  *       - in: path
  *         name: id
  *         required: true
- *         schema: { type: string }
+ *         schema:
+ *           type: string
+ *         description: ID du client à désactiver
  *     responses:
  *       200:
- *         description: Client supprimé (désactivé)
+ *         description: Client désactivé avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Client désactivé
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     _id: { type: string }
+ *                     name: { type: string }
+ *                     isActive:
+ *                       type: boolean
+ *                       example: false
  *       401:
  *         description: Non authentifié
  *       403:
@@ -161,7 +185,52 @@ router.put('/:id', validate(clientUpdateSchema), clientController.update);
  *       404:
  *         description: Client introuvable
  */
-// Only manager or admin can deactivate a client
+router.patch('/:id/deactivate', authorize('manager', 'admin'), clientController.deactivate);
+
+/**
+ * @swagger
+ * /clients/{id}:
+ *   delete:
+ *     summary: Supprimer définitivement un client
+ *     description: >
+ *       Supprime physiquement le client de la base de données.
+ *       **Attention** — cette opération est irréversible.
+ *       Préférer `/clients/{id}/deactivate` pour un soft delete.
+ *     tags: [Clients]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID du client à supprimer
+ *     responses:
+ *       200:
+ *         description: Client supprimé définitivement
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Client supprimé définitivement
+ *                 errors:
+ *                   type: array
+ *                   items: {}
+ *                   example: []
+ *       401:
+ *         description: Non authentifié
+ *       403:
+ *         description: Accès refusé (rôle insuffisant)
+ *       404:
+ *         description: Client introuvable
+ */
 router.delete('/:id', authorize('manager', 'admin'), clientController.remove);
 
 module.exports = router;
