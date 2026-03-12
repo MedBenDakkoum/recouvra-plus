@@ -25,6 +25,40 @@ exports.getOne = async (req, res, next) => {
 exports.update = async (req, res, next) => {
   try {
     const { name, role, isActive } = req.body;
+
+    // Enforce single global admin when changing role
+    if (role === 'admin') {
+      const existingAdmin = await User.findOne({
+        role: 'admin',
+        _id: { $ne: req.params.id },
+      });
+
+      // #region agent log
+      fetch('http://127.0.0.1:7878/ingest/c035b6c4-1f5d-4ddc-be29-ef504c2a160f', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Debug-Session-Id': 'e4692c',
+        },
+        body: JSON.stringify({
+          sessionId: 'e4692c',
+          runId: 'pre-fix',
+          hypothesisId: 'H2',
+          location: 'user.controller.js:update',
+          message: 'Admin role update attempt',
+          data: { hasExistingOtherAdmin: Boolean(existingAdmin) },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
+
+      if (existingAdmin) {
+        return res
+          .status(400)
+          .json({ success: false, message: 'Un administrateur global existe déjà' });
+      }
+    }
+
     const user = await User.findByIdAndUpdate(
       req.params.id,
       { name, role, isActive },
