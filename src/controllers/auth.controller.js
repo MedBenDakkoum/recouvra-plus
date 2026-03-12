@@ -68,3 +68,25 @@ exports.login = async (req, res, next) => {
 exports.getMe = async (req, res) => {
   res.json({ success: true, data: req.user });
 };
+
+// POST /auth/logout
+exports.logout = async (req, res) => {
+  try {
+    // For JWT-based auth, we don't need to do anything server-side
+    // The client will simply remove the token from localStorage
+    // In a real-world scenario, you might want to:
+    // 1. Add the token to a blacklist (Redis)
+    // 2. Log the logout activity
+    // 3. Clear any server-side session data
+    
+    res.json({ 
+      success: true, 
+      message: 'Déconnexion réussie' 
+    });
+  } catch (err) {
+    res.status(500).json({ 
+      success: false, 
+      message: 'Erreur lors de la déconnexion' 
+    });
+  }
+};

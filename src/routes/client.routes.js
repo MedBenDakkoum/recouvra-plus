@@ -83,7 +83,6 @@ router.get('/:id', clientController.getOne);
  *               email: { type: string }
  *               phone: { type: string }
  *               company: { type: string }
- *               siret: { type: string }
  *     responses:
  *       201:
  *         description: Client créé
@@ -127,9 +126,6 @@ router.post('/', validate(clientSchema), clientController.create);
  *               company:
  *                 type: string
  *                 description: Société du client
- *               siret:
- *                 type: string
- *                 description: SIRET de l’entreprise
  *     responses:
  *       200:
  *         description: Client mis à jour

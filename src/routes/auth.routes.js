@@ -78,4 +78,31 @@ router.post('/login', validate(loginSchema), authController.login);
  */
 router.get('/me', authenticate, authController.getMe);
 
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Déconnexion utilisateur
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Déconnexion réussie
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Déconnexion réussie
+ *       401:
+ *         description: Non authentifié
+ */
+router.post('/logout', authenticate, authController.logout);
+
 module.exports = router;

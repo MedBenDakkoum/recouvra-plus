@@ -1,0 +1,31 @@
+<%- include('partials/head') %>
+    <%- include('partials/nav') %>
+        <main class="max-w-7xl mx-auto px-4 py-12 space-y-12">
+            <div class="flex flex-col space-y-2">
+                <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Statistiques Globales</h1>
+                <p class="text-slate-500 font-medium">Performance de recouvrement et indicateurs clés.</p>
+            </div>
+            <div class="grid md:grid-cols-4 gap-8" id="statCards"></div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="glass p-8 rounded-3xl border border-slate-100">
+                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Répartition par Statut
+                    </h2>
+                    <div id="statusSplit" class="space-y-4"></div>
+                </div>
+                <div
+                    class="glass p-8 rounded-3xl border border-slate-100 flex items-center justify-center font-bold text-slate-300 uppercase text-xs">
+                    Évolution Mensuelle (Prochainement)</div>
+            </div>
+        </main>
+        <%- include('partials/api-helper') %>
+            <script>
+                const render = async () => {
+                    const res = await apiCall('/stats/overview');
+                    const s = res.data;
+                    if (!s) return;
+                    statCards.innerHTML = [['Total Factures', s.invoices.byStatus.paid?.count + s.invoices.byStatus.pending?.count || 0, 'blue'], ['Montant Total', `${s.invoices.totalInvoiced} TND`, 'emerald'], ['Total Payé', `${s.invoices.totalPaid} TND`, 'indigo'], ['Restant', `${s.invoices.totalOutstanding} TND`, 'red']].map(([l, v, c]) => `<div class="glass p-8 rounded-3xl border border-slate-100 hover:shadow-xl transition-all hover:translate-y-[-4px]"><div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">${l}</div><div class="text-3xl font-extrabold text-${c}-600 tracking-tight">${v}</div></div>`).join('');
+                    statusSplit.innerHTML = Object.entries(s.invoices.byStatus).map(([st, data]) => `<div class="flex justify-between items-center py-4 border-b border-slate-50 font-bold"><span class="uppercase text-xs tracking-widest text-slate-500">${st}</span><span class="text-xl text-slate-900">${data.count}</span></div>`).join('');
+                };
+                render();
+            </script>
+            <%- include('partials/footer') %>

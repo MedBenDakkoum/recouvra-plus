@@ -1,0 +1,37 @@
+<%- include('partials/head') %>
+    <%- include('partials/nav') %>
+        <main class="max-w-7xl mx-auto px-4 py-12">
+            <div class="mb-12">
+                <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">Bonjour, <span
+                        class="text-blue-600 bg-blue-50 px-3 py-1 rounded-xl">Bienvenue sur Recouvra+</span></h1>
+                <p class="text-slate-500 mt-4 text-lg">Gérez efficacement vos clients et factures impayées depuis votre
+                    tableau de bord centralisé.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <a href="/clients"
+                    class="group glass p-8 rounded-3xl shadow-sm hover:shadow-xl hover:translate-y-[-4px] border border-slate-100 transition-all">
+                    <div
+                        class="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 text-2xl group-hover:bg-indigo-600 group-hover:text-white transition-colors mb-6">
+                        <i class="fas fa-users-viewfinder"></i></div>
+                    <h3 class="text-xl font-bold mb-2">Gestion Clients</h3>
+                    <p class="text-slate-500">Ajouter, modifier et consulter la situation financière de vos clients.</p>
+                </a>
+                <a href="/invoices"
+                    class="group glass p-8 rounded-3xl shadow-sm hover:shadow-xl hover:translate-y-[-4px] border border-slate-100 transition-all">
+                    <div
+                        class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 text-2xl group-hover:bg-emerald-600 group-hover:text-white transition-colors mb-6">
+                        <i class="fas fa-file-invoice-dollar"></i></div>
+                    <h3 class="text-xl font-bold mb-2">Facturation</h3>
+                    <p class="text-slate-500">Suivez les échéances, enregistrez des paiements et gérez les relances.</p>
+                </a>
+                <a href="/stats"
+                    class="group glass p-8 rounded-3xl shadow-sm hover:shadow-xl hover:translate-y-[-4px] border border-slate-100 transition-all">
+                    <div
+                        class="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center text-amber-600 text-2xl group-hover:bg-amber-600 group-hover:text-white transition-colors mb-6">
+                        <i class="fas fa-chart-line"></i></div>
+                    <h3 class="text-xl font-bold mb-2">Statistiques</h3>
+                    <p class="text-slate-500">DSO, taux de recouvrement et performances globales en temps réel.</p>
+                </a>
+            </div>
+        </main>
+        <%- include('partials/footer') %>

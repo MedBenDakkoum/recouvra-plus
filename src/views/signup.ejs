@@ -1,0 +1,39 @@
+<%- include('partials/head') %>
+    <main class="flex items-center justify-center min-h-[80vh] px-4">
+        <div class="max-w-md w-full glass p-8 rounded-2xl shadow-xl border border-slate-200">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-slate-800">S'inscrire</h1>
+                <p class="text-slate-500 mt-2">Créez votre compte agent</p>
+            </div>
+            <form id="signupForm" class="space-y-4">
+                <div><label class="block text-sm font-medium mb-1">Nom complet</label><input type="text" name="name"
+                        required
+                        class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                <div><label class="block text-sm font-medium mb-1">Email</label><input type="email" name="email"
+                        required
+                        class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                <div><label class="block text-sm font-medium mb-1">Mot de passe</label><input type="password"
+                        name="password" required
+                        class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"></div>
+                <div><label class="block text-sm font-medium mb-1">Rôle</label><select name="role"
+                        class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="agent">Agent</option>
+                        <option value="manager">Manager</option>
+                        <option value="admin">Admin</option>
+                    </select></div>
+                <button
+                    class="w-full py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition">S'inscrire</button>
+            </form>
+            <p class="mt-6 text-center text-sm">Déjà un compte ? <a href="/login" class="text-blue-600 font-bold">Se
+                    connecter</a></p>
+        </div>
+    </main>
+    <%- include('partials/api-helper') %>
+        <script>
+            signupForm.onsubmit = async (e) => {
+                e.preventDefault();
+                await apiCall('/auth/register', 'POST', Object.fromEntries(new FormData(signupForm)));
+                window.location.href = '/login';
+            };
+        </script>
+        <%- include('partials/footer') %>
