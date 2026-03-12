@@ -90,10 +90,41 @@ router.post('/', validate(clientSchema), clientController.create);
  *       - in: path
  *         name: id
  *         required: true
- *         schema: { type: string }
+ *         schema:
+ *           type: string
+ *         description: ID du client à modifier
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Nom du client
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email du client
+ *               phone:
+ *                 type: string
+ *                 description: Téléphone du client
+ *               company:
+ *                 type: string
+ *                 description: Société du client
+ *               siret:
+ *                 type: string
+ *                 description: SIRET de l’entreprise
  *     responses:
  *       200:
  *         description: Client mis à jour
+ *       400:
+ *         description: Données invalides
+ *       401:
+ *         description: Non authentifié
+ *       404:
+ *         description: Client introuvable
  */
 router.put('/:id', validate(clientSchema), clientController.update);
 
