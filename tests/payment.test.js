@@ -4,6 +4,7 @@ const app = require('../src/app');
 let token;
 let clientId;
 let invoiceId;
+const INVOICE_AMOUNT = 1500;
 
 const registerAndLogin = async (role = 'admin') => {
   const res = await request(app).post('/api/auth/register').send({
@@ -35,7 +36,7 @@ const createInvoice = async (token, clientId) => {
     .send({
       invoiceNumber: `INV-${Date.now()}`,
       client: clientId,
-      amount: 1500,
+      amount: INVOICE_AMOUNT,
       currency: 'TND',
       dueDate: '2026-12-31',
       status: 'pending',
@@ -51,48 +52,57 @@ describe('Payment Routes', () => {
     invoiceId = await createInvoice(token, clientId);
   });
 
-  const getPaymentData = (invoiceId) => ({
+  const getFullPaymentData = (invoiceId) => ({
     invoice: invoiceId,
-    amount: 500,
+    amount: INVOICE_AMOUNT,
     paymentMethod: 'virement',
   });
 
-  it('should create a payment', async () => {
+  it('should create a payment with full amount', async () => {
     const res = await request(app)
       .post('/api/payments')
       .set('Authorization', `Bearer ${token}`)
-      .send(getPaymentData(invoiceId));
+      .send(getFullPaymentData(invoiceId));
     expect(res.statusCode).toBe(201);
-    expect(res.body.data.amount).toBe(500);
+    expect(res.body.data.amount).toBe(INVOICE_AMOUNT);
+
+    // Verify status is now paid
+    const inv = await request(app)
+      .get(`/api/invoices/${invoiceId}`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(inv.body.data.status).toBe('paid');
   });
 
-  it('should update invoice status to partial after payment', async () => {
+  it('should reject partial payments', async () => {
+    const res = await request(app)
+      .post('/api/payments')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ invoice: invoiceId, amount: 500, paymentMethod: 'virement' });
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toContain(INVOICE_AMOUNT.toString());
+  });
+
+  it('should reject payment for already paid invoice', async () => {
+    // Pay it first
     await request(app)
       .post('/api/payments')
       .set('Authorization', `Bearer ${token}`)
-      .send(getPaymentData(invoiceId));
-    const res = await request(app)
-      .get(`/api/invoices/${invoiceId}`)
-      .set('Authorization', `Bearer ${token}`);
-    expect(res.body.data.status).toBe('partial');
-  });
+      .send(getFullPaymentData(invoiceId));
 
-  it('should update invoice status to paid when full amount paid', async () => {
-    await request(app)
+    // Try paying again
+    const res = await request(app)
       .post('/api/payments')
       .set('Authorization', `Bearer ${token}`)
-      .send({ invoice: invoiceId, amount: 1500, paymentMethod: 'virement' });
-    const res = await request(app)
-      .get(`/api/invoices/${invoiceId}`)
-      .set('Authorization', `Bearer ${token}`);
-    expect(res.body.data.status).toBe('paid');
+      .send(getFullPaymentData(invoiceId));
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe('Cette facture est déjà payée');
   });
 
   it('should list payments', async () => {
     await request(app)
       .post('/api/payments')
       .set('Authorization', `Bearer ${token}`)
-      .send(getPaymentData(invoiceId));
+      .send(getFullPaymentData(invoiceId));
     const res = await request(app)
       .get('/api/payments')
       .set('Authorization', `Bearer ${token}`);
@@ -104,12 +114,12 @@ describe('Payment Routes', () => {
     const created = await request(app)
       .post('/api/payments')
       .set('Authorization', `Bearer ${token}`)
-      .send(getPaymentData(invoiceId));
+      .send(getFullPaymentData(invoiceId));
     const res = await request(app)
       .get(`/api/payments/${created.body.data._id}`)
       .set('Authorization', `Bearer ${token}`);
     expect(res.statusCode).toBe(200);
-    expect(res.body.data.amount).toBe(500);
+    expect(res.body.data.amount).toBe(INVOICE_AMOUNT);
   });
 
   it('should reject unauthenticated access', async () => {
